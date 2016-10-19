@@ -1,0 +1,19 @@
+{
+  "name": "plucky-plugin-manager",
+  "version": "0.0.1",
+  "description": "Manages loading and installing plugins for Plucky-CI",
+  "main": "index.js",
+  "scripts": {
+    "test": "lab"
+  },
+  "author": "Jeremy Darling <jeremy.darling@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.1.2",
+    "npm": "^3.10.8"
+  },
+  "devDependencies": {
+    "code": "^4.0.0",
+    "lab": "^11.1.0"
+  }
+}
