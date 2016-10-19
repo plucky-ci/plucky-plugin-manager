@@ -6,6 +6,8 @@ const describe = lab.describe;
 const it = lab.it;
 const expect = Code.expect;
 
+const path = require('path');
+
 const {
   PluginManager,
   plugins
@@ -46,11 +48,23 @@ describe('PluginManager', ()=>{
     });
   }); // describe('getPackageDetails')
 
+/*
   it('can install and use a package given a baseDir', (done)=>{
-    const p = new PluginManager({baseDir: __dirname+'/plugins'});
+    const p = new PluginManager({pluginsFolder: __dirname+'/plugins'});
     p.get({'colors': 'colors'}, (err, packages)=>{
       expect(packages).to.be.an.object();
       expect(packages.colors).to.be.an.object();
+      done();
+    });
+  });
+  */
+
+  it('can use a package given a baseDir', (done)=>{
+    const p = new PluginManager({pluginsFolder: path.join(__dirname, 'plugins')});
+    p.get({'test': 'test'}, (err, packages)=>{
+      expect(packages).to.be.an.object();
+      expect(packages.test).to.be.an.object();
+      expect(packages.test.test).to.equal(true);
       done();
     });
   });

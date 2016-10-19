@@ -20,6 +20,8 @@ Async will be installed and returned.  plucky-ssh will be installed at version 0
 API:
 ---
 
+###Plugins.constructor({pluginsFolder = process.cwd()+'/plugins'})
+
 ###Plugins.get(pluginMap, callback)
 
  * pluginMap - is a JavaScript object (or hash) representing what NPM modules need to be installed and used
@@ -32,8 +34,8 @@ const {
   plugins
 } = require('plucky-plugin-manager');
 
+// assumes that the plugins folder contains a plucky-ssh folder with the plugin in it
 plugins.get({
-  'async', 'async',
   'ssh', 'plucky-ssh'
 }, (err, plugins)=>{
   if(err){
@@ -41,10 +43,9 @@ plugins.get({
     return;
   }
   const {
-    async,
     ssh
   } = plugins;
-  // Here you can do something with async and ssh now
+  // Here you can do something with ssh now
 });
 ```
 
