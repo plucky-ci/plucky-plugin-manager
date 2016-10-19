@@ -36,7 +36,7 @@ const {
 
 // assumes that the plugins folder contains a plucky-ssh folder with the plugin in it
 plugins.get({
-  'ssh', 'plucky-ssh'
+  'ssh': 'plucky-ssh' // Load plucky-ssh as ssh
 }, (err, plugins)=>{
   if(err){
     console.error(err);
