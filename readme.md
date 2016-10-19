@@ -44,6 +44,12 @@ plugins.get({
     async,
     ssh
   } = plugins;
-  // Here you can do something with async or ssh now
+  // Here you can do something with async and ssh now
 });
 ```
+
+###Plugins.getPackageDetails(fromName) -> PackageDetails
+
+PackageDetails
+ * name - The name or scoped name of the package
+ * version - Version identifier for the package if specified

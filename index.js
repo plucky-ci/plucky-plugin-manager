@@ -6,7 +6,7 @@ const plugins = new PluginManager({
   basePath: process.cwd()
 });
 
-const {
+module.exports = {
   PluginManager,
   plugins
 };
