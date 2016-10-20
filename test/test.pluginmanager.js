@@ -4,19 +4,28 @@ const lab = exports.lab = Lab.script();
 
 const describe = lab.describe;
 const it = lab.it;
+const before = lab.before;
+const after = lab.after;
 const expect = Code.expect;
 
 const path = require('path');
+
+const {
+  removeFolder
+} = require('../lib/utils');
 
 const {
   PluginManager,
   plugins
 } = require('../');
 
-describe('PluginManager', ()=>{
-  describe('getPackageDetails', ()=>{
+describe('PluginManager', {timeout: 30000}, ()=>{
+  const pluginsFolder = __dirname+'/plugins';
+  const noop = ()=>{};
+
+  describe('getDetailsFromName', ()=>{
     it('returns the package name for a basic package name', (done)=>{
-      const packageInfo = plugins.getPackageDetails('foo');
+      const packageInfo = plugins.getDetailsFromName('foo');
       expect(packageInfo).to.be.an.object();
       expect(packageInfo.name).to.equal('foo');
       expect(packageInfo.version).to.be.undefined();
@@ -24,7 +33,7 @@ describe('PluginManager', ()=>{
     });
 
     it('returns the package name for a basic namespaced package', (done)=>{
-      const packageInfo = plugins.getPackageDetails('@foo/foo');
+      const packageInfo = plugins.getDetailsFromName('@foo/foo');
       expect(packageInfo).to.be.an.object();
       expect(packageInfo.name).to.equal('@foo/foo');
       expect(packageInfo.version).to.be.undefined();
@@ -32,7 +41,7 @@ describe('PluginManager', ()=>{
     });
 
     it('returns the package name and version for a basic name with version', (done)=>{
-      const packageInfo = plugins.getPackageDetails('foo@0.0.1');
+      const packageInfo = plugins.getDetailsFromName('foo@0.0.1');
       expect(packageInfo).to.be.an.object();
       expect(packageInfo.name).to.equal('foo');
       expect(packageInfo.version).to.equal('0.0.1');
@@ -40,32 +49,70 @@ describe('PluginManager', ()=>{
     });
 
     it('returns the package name and version for a basic name with version', (done)=>{
-      const packageInfo = plugins.getPackageDetails('@foo/foo@0.0.1');
+      const packageInfo = plugins.getDetailsFromName('@foo/foo@0.0.1');
       expect(packageInfo).to.be.an.object();
       expect(packageInfo.name).to.equal('@foo/foo');
       expect(packageInfo.version).to.equal('0.0.1');
       return done();
     });
+  }); // describe('getDetailsFromName')
+
+  describe('getPackageDetails', ()=>{
+    it('can get details from a NPM registry package', (done)=>{
+      plugins.getPackageDetails('async', (error, details)=>{
+        expect(error).to.be.null();
+        expect(details).to.be.an.object();
+        expect(details.name).to.be.a.string();
+        expect(details.version).to.be.a.string();
+        return done();
+      });
+    });
+
+    it('can get details from local package in a file', (done)=>{
+      plugins.getPackageDetails(path.join(__dirname, 'modules', 'foo'), (error, details)=>{
+        expect(error).to.be.null();
+        expect(details).to.be.an.object();
+        expect(details.name).to.be.a.string().and.to.equal('foo');
+        expect(details.version).to.be.a.string().and.to.equal('1.0.0');
+        return done();
+      });
+    });
   }); // describe('getPackageDetails')
 
-/*
-  it('can install and use a package given a baseDir', (done)=>{
-    const p = new PluginManager({pluginsFolder: __dirname+'/plugins'});
+  it('can install and use a package given a pluginsFolder', (done)=>{
+    const p = new PluginManager({pluginsFolder});
     p.get({'colors': 'colors'}, (err, packages)=>{
       expect(packages).to.be.an.object();
       expect(packages.colors).to.be.an.object();
       done();
     });
   });
-  */
 
-  it('can use a package given a baseDir', (done)=>{
-    const p = new PluginManager({pluginsFolder: path.join(__dirname, 'plugins')});
-    p.get({'test': 'test'}, (err, packages)=>{
+  it('can install and use multiple packages given a pluginsFolder', (done)=>{
+    const p = new PluginManager({pluginsFolder});
+    p.get({'colors': 'colors', 'lodash': 'lodash'}, (err, packages)=>{
       expect(packages).to.be.an.object();
-      expect(packages.test).to.be.an.object();
-      expect(packages.test.test).to.equal(true);
+      expect(packages.colors).to.be.an.object();
+      expect(packages).to.be.an.object();
+      expect(packages.lodash).to.be.a.function();
       done();
     });
+  });
+
+  it('can install and use a package from a directory', (done)=>{
+    const p = new PluginManager({pluginsFolder});
+    p.get({'foo': path.join(__dirname, 'modules', 'foo')}, (err, packages)=>{
+      expect(packages).to.be.an.object();
+      expect(packages.foo).to.equal('FOO');
+      done();
+    });
+  });
+
+  before((done)=>{
+    removeFolder(pluginsFolder, done);
+  });
+
+  after((done)=>{
+    removeFolder(pluginsFolder, done);
   });
 });

@@ -1,2 +1,3 @@
 node_modules/
+test/plugins/
 npm-debug.log
