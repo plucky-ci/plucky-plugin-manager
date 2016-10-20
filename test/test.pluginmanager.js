@@ -124,6 +124,15 @@ describe('PluginManager', {timeout: 30000}, ()=>{
     });
   });
 
+  it('should not throw errors when not loading any plugins', (done)=>{
+    const p = new PluginManager({pluginsFolder});
+    p.get({}, (err, packages)=>{
+      expect(err).to.be.null();
+      expect(packages).to.be.an.object();
+      done();
+    });
+  });
+
   before((done)=>{
     removeFolder(pluginsFolder, done);
   });
