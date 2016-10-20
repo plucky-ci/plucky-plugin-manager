@@ -1,6 +1,8 @@
 const Code = require('code');
 const Lab = require('lab');
 const lab = exports.lab = Lab.script();
+const mkdirp = require('mkdirp');
+const fs = require('fs');
 
 const describe = lab.describe;
 const it = lab.it;
@@ -90,9 +92,9 @@ describe('PluginManager', {timeout: 30000}, ()=>{
 
   it('can install and use multiple packages given a pluginsFolder', (done)=>{
     const p = new PluginManager({pluginsFolder});
-    p.get({'colors': 'colors', 'lodash': 'lodash'}, (err, packages)=>{
+    p.get({'fab': 'colors', 'lodash': 'lodash'}, (err, packages)=>{
       expect(packages).to.be.an.object();
-      expect(packages.colors).to.be.an.object();
+      expect(packages.fab).to.be.an.object();
       expect(packages).to.be.an.object();
       expect(packages.lodash).to.be.a.function();
       done();
@@ -105,6 +107,20 @@ describe('PluginManager', {timeout: 30000}, ()=>{
       expect(packages).to.be.an.object();
       expect(packages.foo).to.equal('FOO');
       done();
+    });
+  });
+
+  it('can use a package from the plugins folder', (done)=>{
+    const pluginPath = path.join(pluginsFolder, 'bar');
+    mkdirp(pluginPath, ()=>{
+      fs.writeFileSync(path.join(pluginPath, 'package.json'), '{"name": "bar", "version": "1.0.0", "main": "index.js", "license": "ISC"}');
+      fs.writeFileSync(path.join(pluginPath, 'index.js'), 'module.exports = "BAR";');
+      const p = new PluginManager({pluginsFolder});
+      p.get({'foo': 'bar'}, (err, packages)=>{
+        expect(packages).to.be.an.object();
+        expect(packages.foo).to.equal('BAR');
+        done();
+      });
     });
   });
 
